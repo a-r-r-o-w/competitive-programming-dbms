@@ -3,6 +3,7 @@ import mysql.connector
 
 import config
 import initialize
+import query
 
 def main () -> None:
   connection = mysql.connector.connect(
@@ -38,7 +39,7 @@ def main () -> None:
       pass
     
     case 'Query':
-      pass
+      query.query(cursor)
     
     case 'Cleanup':
       initialize.cleanup(cursor)

@@ -1,17 +1,17 @@
 # database related
 
-def create_database (dbname):
+def create_database (dbname) -> str:
   return f'create database {dbname}'
 
 def use_database (dbname):
   return f'use {dbname}'
 
-def delete_database (dbname):
+def delete_database (dbname) -> str:
   return f'drop database {dbname}'
 
 # table creation related
 
-def create_table_user ():
+def create_table_user () -> str:
   return '''\
 create table if not exists user (
   user_id int primary key,
@@ -27,7 +27,7 @@ create table if not exists user (
 ) engine=InnoDB default charset = utf8
 '''
 
-def create_table_contest ():
+def create_table_contest () -> str:
   return '''\
 create table if not exists contest (
   contest_id int primary key,
@@ -38,7 +38,7 @@ create table if not exists contest (
 ) engine=InnoDB default charset = utf8
 '''
 
-def create_table_blog ():
+def create_table_blog () -> str:
   return '''\
 create table if not exists blog (
   blog_id int primary key,
@@ -54,7 +54,7 @@ create table if not exists blog (
 ) engine=InnoDB default charset = utf8
 '''
 
-def create_table_tag ():
+def create_table_tag () -> str:
   return '''\
 create table if not exists tag (
   tag_id int primary key,
@@ -62,7 +62,7 @@ create table if not exists tag (
 ) engine=InnoDB default charset = utf8
 '''
 
-def create_table_comment ():
+def create_table_comment () -> str:
   return '''\
 create table if not exists comment (
   writer_id int,
@@ -79,7 +79,7 @@ create table if not exists comment (
 )
 '''
 
-def create_table_about ():
+def create_table_about () -> str:
   return '''\
 create table if not exists about (
   blog_id int,
@@ -94,7 +94,7 @@ create table if not exists about (
 )
 '''
 
-def create_table_problem ():
+def create_table_problem () -> str:
   return '''\
 create table if not exists problem (
   problem_id int,
@@ -109,7 +109,7 @@ create table if not exists problem (
 )
 '''
 
-def create_table_categorized ():
+def create_table_categorized () -> str:
   return '''\
 create table if not exists categorized (
   contest_id int,
@@ -125,7 +125,7 @@ create table if not exists categorized (
 )
 '''
 
-def create_table_message ():
+def create_table_message () -> str:
   return '''\
 create table if not exists message (
   sender_id int,
@@ -142,7 +142,7 @@ create table if not exists message (
 )
 '''
 
-def create_table_submission ():
+def create_table_submission () -> str:
   return '''\
 create table if not exists submission (
   submission_id int primary key,
@@ -162,7 +162,7 @@ create table if not exists submission (
 )
 '''
 
-def create_table_gives ():
+def create_table_gives () -> str:
   return '''\
 create table if not exists gives (
   user_id int,

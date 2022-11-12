@@ -33,6 +33,7 @@ def initialize (cursor: mysql.connector.cursor.MySQLCursor) -> None:
     if not is_db_created:
       cursor.execute(queries.create_database(dbname))
       cursor.execute(queries.use_database(dbname))
+      config.SQL_DBNAME = dbname
       is_db_created = True
       st.info(f'Database "{dbname}" created successfully!')
     
