@@ -24,7 +24,7 @@ create table if not exists user (
   institute varchar(50),
   country varchar(50),
   last_online timestamp
-) engine=InnoDB default charset = utf8
+) engine=InnoDB default charset=utf8
 '''
 
 def create_table_contest () -> str:
@@ -35,7 +35,7 @@ create table if not exists contest (
   type varchar(50) not null,
   duration int not null default 60,
   start_time timestamp
-) engine=InnoDB default charset = utf8
+) engine=InnoDB default charset=utf8
 '''
 
 def create_table_blog () -> str:
@@ -51,7 +51,7 @@ create table if not exists blog (
   foreign key (writer_id) references user(user_id)
     on delete set default
     on update cascade
-) engine=InnoDB default charset = utf8
+) engine=InnoDB default charset=utf8
 '''
 
 def create_table_tag () -> str:
@@ -59,7 +59,7 @@ def create_table_tag () -> str:
 create table if not exists tag (
   tag_id int primary key,
   name varchar(20)
-) engine=InnoDB default charset = utf8
+) engine=InnoDB default charset=utf8
 '''
 
 def create_table_comment () -> str:
@@ -76,7 +76,7 @@ create table if not exists comment (
   foreign key (blog_id) references blog(blog_id)
     on delete set default
     on update cascade
-)
+) engine=InnoDB default charset=utf8
 '''
 
 def create_table_about () -> str:
@@ -91,7 +91,7 @@ create table if not exists about (
   foreign key (tag_id) references tag(tag_id)
     on delete set default
     on update cascade
-)
+) engine=InnoDB default charset=utf8
 '''
 
 def create_table_problem () -> str:
@@ -106,7 +106,7 @@ create table if not exists problem (
   foreign key (contest_id) references contest(contest_id)
     on delete set default
     on update cascade
-)
+) engine=InnoDB default charset=utf8
 '''
 
 def create_table_categorized () -> str:
@@ -122,7 +122,7 @@ create table if not exists categorized (
   foreign key (tag_id) references tag(tag_id)
     on delete set default
     on update cascade
-)
+) engine=InnoDB default charset=utf8
 '''
 
 def create_table_message () -> str:
@@ -139,7 +139,7 @@ create table if not exists message (
   foreign key (receiver_id) references user(user_id)
     on delete set default
     on update cascade
-)
+) engine=InnoDB default charset=utf8
 '''
 
 def create_table_submission () -> str:
@@ -159,7 +159,7 @@ create table if not exists submission (
   foreign key (contest_id, problem_id) references problem(contest_id, problem_id)
     on delete set default
     on update cascade
-)
+) engine=InnoDB default charset=utf8
 '''
 
 def create_table_gives () -> str:
@@ -176,5 +176,5 @@ create table if not exists gives (
   foreign key (contest_id) references contest(contest_id)
     on delete set default
     on update cascade
-)
+) engine=InnoDB default charset=utf8
 '''
