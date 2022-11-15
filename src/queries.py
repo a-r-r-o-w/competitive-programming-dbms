@@ -65,12 +65,12 @@ create table if not exists tag (
 def create_table_comment () -> str:
   return '''\
 create table if not exists comment (
-  writer_id int,
+  user_id int,
   blog_id int,
-  content varchar(100),
+  content varchar(200),
   time timestamp,
-  primary key (writer_id, blog_id, time),
-  foreign key (writer_id) references user(user_id)
+  primary key (user_id, blog_id, time),
+  foreign key (user_id) references user(user_id)
     on delete set default
     on update cascade,
   foreign key (blog_id) references blog(blog_id)
@@ -102,6 +102,7 @@ create table if not exists problem (
   type varchar(50) not null,
   time_constraint int not null default 1,
   memory_constraint int not null default 256,
+  points int not null default 0,
   primary key (problem_id, contest_id),
   foreign key (contest_id) references contest(contest_id)
     on delete set default
@@ -130,7 +131,7 @@ def create_table_message () -> str:
 create table if not exists message (
   sender_id int,
   receiver_id int,
-  body varchar(200) not null,
+  body varchar(500) not null,
   time timestamp,
   primary key (sender_id, receiver_id, time),
   foreign key (sender_id) references user(user_id)
@@ -177,4 +178,28 @@ create table if not exists gives (
     on delete set default
     on update cascade
 ) engine=InnoDB default charset=utf8
+'''
+
+def insert (table_name: str, data: dict) -> str:
+  keys = []
+  values = []
+  
+  for k, v in data.items():
+    keys.append(k)
+
+    if type(v) == int:
+      values.append(f'{v}')
+    elif type(v) == str:
+      values.append(f"'{v}'")
+    else:
+      raise TypeError('Invalid type used in insert statement')
+  
+  keys = ', '.join(keys)
+  values = ', '.join(values)
+
+  return f'''\
+insert into {table_name} 
+  ({keys})
+values
+  ({values})
 '''
