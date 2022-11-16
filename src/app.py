@@ -3,6 +3,7 @@ import mysql.connector
 
 import config
 import initialize
+import create
 import query
 
 def main () -> None:
@@ -27,7 +28,7 @@ def main () -> None:
       initialize.initialize(cursor)
     
     case 'Create':
-      pass
+      create.create(cursor)
     
     case 'Read':
       pass

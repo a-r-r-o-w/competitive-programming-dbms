@@ -32,7 +32,7 @@ def create_table_contest () -> str:
 create table if not exists contest (
   contest_id int primary key,
   name varchar(50) not null,
-  type varchar(50) not null,
+  type varchar(10) not null,
   duration int not null default 60,
   start_time timestamp
 ) engine=InnoDB default charset=utf8
@@ -43,12 +43,12 @@ def create_table_blog () -> str:
 create table if not exists blog (
   blog_id int primary key,
   title varchar(50) not null default ' ',
-  content varchar(500),
+  content varchar(1000),
   upvote_count int not null default 0,
   downvote_count int not null default 0,
-  writer_id int,
+  user_id int,
   time timestamp,
-  foreign key (writer_id) references user(user_id)
+  foreign key (user_id) references user(user_id)
     on delete set default
     on update cascade
 ) engine=InnoDB default charset=utf8
