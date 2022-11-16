@@ -21,7 +21,12 @@ Executing query:\n
     
     cursor.execute(queries.use_database(config.SQL_DBNAME))
     cursor.execute(custom_query)
-    data = cursor.fetchall()
+    data = {}
+
+    try:
+      data = cursor.fetchall()
+    except Exception as e:
+      st.error(e)
 
     st.subheader('Query Results')
     st.write(data)
