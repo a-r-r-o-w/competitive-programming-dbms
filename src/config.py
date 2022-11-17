@@ -1,4 +1,6 @@
 import streamlit as st
+import time
+import datetime
 
 SQL_USER = 'competitive-programming-dbms-admin'
 SQL_PASSWORD = '5up3r-s3cur3-p4ssw0rd'
@@ -10,6 +12,10 @@ SQL_TABLENAMES = [
   'user', 'contest', 'blog', 'tag', 'comment', 'about', 'problem',
   'categorized', 'message', 'submission', 'gives'
 ]
+
+_current_time = int(time.time())
+
+_timestamp_to_date = lambda x: str(datetime.datetime.fromtimestamp(x))
 
 SQL_TABLE_ATTRIBUTES = {
   'user': {
@@ -108,7 +114,7 @@ SQL_TABLE_ATTRIBUTES = {
         'value': 0,
         'key': 'user.lastonline'
       },
-      'type': int
+      'type': _timestamp_to_date
     }
   },
 
@@ -144,6 +150,7 @@ SQL_TABLE_ATTRIBUTES = {
       'params': {
         'label': 'Duration',
         'min_value': 0,
+        'value': 60,
         'key': 'contest.duration'
       },
       'type': int
@@ -153,10 +160,11 @@ SQL_TABLE_ATTRIBUTES = {
       'params': {
         'label': 'Start Time',
         'min_value': 0,
+        'value': _current_time,
         'key': 'contest.start_time'
       },
-      'type': int
-    },
+      'type': _timestamp_to_date
+    }
   },
 
   'blog': {
@@ -205,12 +213,12 @@ SQL_TABLE_ATTRIBUTES = {
       },
       'type': int
     },
-    'writer_id': {
+    'user_id': {
       'function': st.number_input,
       'params': {
-        'label': 'Writer ID',
+        'label': 'User ID',
         'min_value': 0,
-        'key': 'blog.writer_id'
+        'key': 'blog.user_id'
       },
       'type': int
     },
@@ -219,14 +227,335 @@ SQL_TABLE_ATTRIBUTES = {
       'params': {
         'label': 'Time',
         'min_value': 0,
+        'value': _current_time,
         'key': 'blog.time'
+      },
+      'type': _timestamp_to_date
+    }
+  },
+
+  'tag': {
+    'tag_id':{ 
+      'function': st.number_input,
+      'params': {
+        'label': 'Tag ID',
+        'min_value': 0,
+        'key': 'tag.tag_id'
+      },
+      'type': int
+    },
+    'name':{ 
+      'function': st.text_input,
+      'params': {
+        'label': 'Name',
+        'max_chars': 20,
+        'key': 'tag.name'
+      },
+      'type': str
+    }
+  },
+
+  'comment': {
+    'user_id': {
+      'function': st.number_input,
+      'params': {
+        'label': 'User ID',
+        'min_value': 0,
+        'key': 'comment.user_id'
+      },
+      'type': int
+    },
+    'blog_id': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Blog ID',
+        'min_value': 0,
+        'key': 'comment.blog_id'
+      },
+      'type': int
+    },
+    'content': {
+      'function': st.text_area,
+      'params': {
+        'label': 'Content',
+        'max_chars': 200,
+        'key': 'comment.content'
+      },
+      'type': str
+    },
+    'time': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Time',
+        'min_value': 0,
+        'value': _current_time,
+        'key': 'comment.time'
+      },
+      'type': _timestamp_to_date
+    }
+  },
+
+  'about': {
+    'blog_id': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Blog ID',
+        'min_value': 0,
+        'key': 'about.blog_id'
+      },
+      'type': int
+    },
+    'tag_id': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Tag ID',
+        'min_value': 0,
+        'key': 'about.tag_id'
+      },
+      'type': int
+    }
+  },
+
+  'problem': {
+    'problem_id': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Problem ID',
+        'min_value': 0,
+        'key': 'problem.problem_id'
+      },
+      'type': int
+    },
+    'contest_id': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Contest ID',
+        'min_value': 0,
+        'key': 'problem.contest_id'
+      },
+      'type': int
+    },
+    'type': {
+      'function': st.selectbox,
+      'params': {
+        'label': 'Type',
+        'options': ['MCQ', 'Non-Interactive', 'Interactive'],
+        'key': 'problem.type'
+      },
+      'type': str
+    },
+    'time_constraint': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Time Constraint',
+        'min_value': 0,
+        'value': 1,
+        'key': 'problem.time_constraint'
+      },
+      'type': int
+    },
+    'memory_constraint': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Memory Constraint',
+        'min_value': 0,
+        'value': 256,
+        'key': 'problem.memory_constraint'
+      },
+      'type': int
+    }
+  },
+
+  'categorized': {
+    'contest_id': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Contest ID',
+        'min_value': 0,
+        'key': 'categorized.contest_id'
+      },
+      'type': int
+    },
+    'problem_id': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Problem ID',
+        'min_value': 0,
+        'key': 'categorized.problem_id'
+      },
+      'type': int
+    },
+    'tag_id': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Tag ID',
+        'min_value': 0,
+        'key': 'categorized.tag_id'
       },
       'type': int
     },
   },
 
-  'tag': {
-    'tag_id'
-    'name'
+  'message': {
+    'sender_id': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Sender ID',
+        'min_value': 0,
+        'key': 'message.sender_id'
+      },
+      'type': int
+    },
+    'receiver_id': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Receiver ID',
+        'min_value': 0,
+        'key': 'message.receiver_id'
+      },
+      'type': int
+    },
+    'body': {
+      'function': st.text_area,
+      'params': {
+        'label': 'Body',
+        'max_chars': 500,
+        'key': 'message.body'
+      },
+      'type': str
+    },
+    'time': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Time',
+        'min_value': 0,
+        'value': _current_time,
+        'key': 'message.time'
+      },
+      'type': _timestamp_to_date
+    }
+  },
+
+  'submission': {
+    'submission_id': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Submission ID',
+        'min_value': 0,
+        'key': 'submission.submission_id'
+      },
+      'type': int
+    },
+    'user_id': {
+      'function': st.number_input,
+      'params': {
+        'label': 'User ID',
+        'min_value': 0,
+        'key': 'submission.user_id'
+      },
+      'type': int
+    },
+    'status': {
+      'function': st.selectbox,
+      'params': {
+        'label': 'Status',
+        'options': [
+          'Failed', 'Passed', 'Partial', 'Compilation Error', 'Runtime Error',
+          'Wrong Answer', 'Presentation Error', 'Time Limit Exceeded',
+          'Memory Limit Exceeded', 'Idleness Limit Exceeded', 'Security Violated',
+          'Crashed', 'Input Preparation Crashed', 'Challenged', 'Skipped',
+          'Testing', 'Rejected'
+        ],
+        'key': 'submission.status'
+      },
+      'type': str
+    },
+    'execution_time': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Execution Time',
+        'min_value': 0,
+        'key': 'submission.execution_time'
+      },
+      'type': int
+    },
+    'execution_memory': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Execution Memory',
+        'min_value': 0,
+        'key': 'submission.execution_memory'
+      },
+      'type': int
+    },
+    'contest_id': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Contest ID',
+        'min_value': 0,
+        'key': 'submission.contest_id'
+      },
+      'type': int
+    },
+    'problem_id': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Problem ID',
+        'min_value': 0,
+        'key': 'submission.problem_id'
+      },
+      'type': int
+    },
+    'time': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Time',
+        'min_value': 0,
+        'value': _current_time,
+        'key': 'submission.time'
+      },
+      'type': _timestamp_to_date
+    }
+  },
+
+  'gives': {
+    'user_id': {
+      'function': st.number_input,
+      'params': {
+        'label': 'User ID',
+        'min_value': 0,
+        'key': 'gives.user_id'
+      },
+      'type': int
+    },
+    'contest_id': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Contest ID',
+        'min_value': 0,
+        'key': 'gives.contest_id'
+      },
+      'type': int
+    },
+    'rating_change': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Rating Change',
+        'min_value': -500,
+        'max_value': +500,
+        'value': 0,
+        'key': 'gives.rating_change'
+      },
+      'type': int
+    },
+    'rank': {
+      'function': st.number_input,
+      'params': {
+        'label': 'Rank',
+        'min_value': -1,
+        'key': 'gives.rank'
+      },
+      'type': int
+    }
   }
 }

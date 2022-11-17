@@ -26,3 +26,11 @@ def create (cursor: mysql.connector.cursor.MySQLCursor) -> None:
       attribute: str
       props: dict
       values[attribute] = props.get('type')(props.get('function')(**props.get('params')))
+  
+  with st.expander('See query'):
+    st.code(queries.insert(table_selection, values))
+  
+  if st.button(label = f'Add {table_selection}', key = 'add_table_selection'):
+    cursor.execute(queries.use_database(config.SQL_DBNAME))
+    cursor.execute(queries.insert(table_selection, values))
+    st.info(f'Data inserted into table {table_selection} succesfully')
