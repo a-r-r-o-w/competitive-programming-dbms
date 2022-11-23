@@ -67,7 +67,7 @@ def create_table_comment () -> str:
 create table if not exists comment (
   user_id int,
   blog_id int,
-  content varchar(200),
+  content varchar(300),
   time timestamp,
   primary key (user_id, blog_id, time),
   foreign key (user_id) references user(user_id)

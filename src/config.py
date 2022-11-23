@@ -82,7 +82,7 @@ SQL_TABLE_ATTRIBUTES = {
       'params': {
         'label': 'Contribution',
         'min_value': 0,
-        'max_value': 1000,
+        'max_value': 200,
         'value': 0,
         'key': 'user.contribution'
       },
@@ -278,7 +278,7 @@ SQL_TABLE_ATTRIBUTES = {
       'function': st.text_area,
       'params': {
         'label': 'Content',
-        'max_chars': 200,
+        'max_chars': 300,
         'key': 'comment.content'
       },
       'type': str
@@ -559,3 +559,19 @@ SQL_TABLE_ATTRIBUTES = {
     }
   }
 }
+
+SQL_TABLE_SIZE = {
+  'user': 1000,
+  'contest': 100,
+  'blog': 200,
+  'tag': 50,
+  'comment': 500,
+  'about': 200,
+  'problem': 500,
+  'categorized': 450,
+  'message': 3000,
+  'submission': 5000,
+  'gives': 20000
+}
+
+SQL_TABLE_DEMO_SIZE = {k: v // 10 for k, v in SQL_TABLE_SIZE.items()}
