@@ -84,7 +84,7 @@ def create (cursor: mysql.connector.cursor.MySQLCursor) -> None:
   if st.button(label = f'Add {table_selection}', key = 'add_table_selection'):
     cursor.execute(queries.use_database(config.SQL_DBNAME))
     cursor.execute(queries.insert_one(table_selection, values))
-    st.info(f'Data inserted into table {table_selection} succesfully')
+    st.success(f'Data inserted into table {table_selection} succesfully')
 
 def generate_random_data () -> dict:
   filename_list = ['country', 'firstname', 'institute', 'lastname', 'password', 'problem', 'tag', 'text']
@@ -92,13 +92,16 @@ def generate_random_data () -> dict:
 
   for filename in filename_list:
     with open('data/' + filename + '.txt', 'r') as file:
-      wordlist[filename] = [line.strip().lower() for line in file.readlines()]
+      if filename == 'institute':
+        wordlist[filename] = [line.strip() for line in file.readlines()]
+      else:
+        wordlist[filename] = [line.strip().lower() for line in file.readlines()]
 
   data = {}
 
   data['country'] = random.sample(wordlist.get('country'), config.SQL_TABLE_DEMO_SIZE.get('user'))
   data['firstname'] = random.sample(wordlist.get('firstname'), config.SQL_TABLE_DEMO_SIZE.get('user'))
-  data['institute'] = random.sample(wordlist.get('institute'), config.SQL_TABLE_DEMO_SIZE.get('user') // 5)
+  data['institute'] = random.sample(wordlist.get('institute'), 15)
   data['lastname'] = random.sample(wordlist.get('lastname'), config.SQL_TABLE_DEMO_SIZE.get('user'))
   data['password'] = random.sample(wordlist.get('password'), config.SQL_TABLE_DEMO_SIZE.get('user'))
   data['problem'] = random.sample(wordlist.get('problem'), config.SQL_TABLE_DEMO_SIZE.get('problem'))
@@ -292,7 +295,7 @@ def generate_random_data () -> dict:
     {
       'user_id': gives[index][0],
       'contest_id': gives[index][1],
-      'rating_change': random.randint(-200, 400),
+      'rating_change': random.randint(-100, 400),
       'rank': random.randint(1, 10000)
     }
     for index in range(config.SQL_TABLE_DEMO_SIZE.get('gives'))
@@ -309,7 +312,7 @@ def insert_data (cursor: mysql.connector.cursor.MySQLCursor):
     cursor.execute(queries.insert_many(table_name, table_data))
     st.info(f'Data inserted into table "{table_name}" sucessfully')
   
-  st.info('Database initialized with random data')
+  st.success('Database initialized with random data')
 
 def get_random_time ():
   return str(datetime.datetime.fromtimestamp(int(time.time()) - random.randint(0, 100000000)))

@@ -235,3 +235,50 @@ insert into {table_name}
 values
   {values}
 '''
+
+def most_recent_blogs (blog_count: int, blog_order: str):
+  if blog_order == 'Least Recent':
+    order = 'asc'
+  else:
+    order = 'desc'
+  
+  return f'''
+select
+  blog.*, user.username
+from
+  blog
+join
+  user on blog.user_id = user.user_id
+order by
+  time {order}
+limit {blog_count}
+'''
+
+def user_count_in_organisations ():
+  return '''
+select
+  institute, count(*)
+from
+  user
+group by
+  institute
+order by
+  count(*) desc
+'''
+
+def user_rating_graph (user_id):
+  return f'''
+select
+  gives.user_id, gives.contest_id, gives.rating_change,
+  contest.name as 'contest_name', contest.start_time as 'contest_start_time'
+from
+  user
+join
+  gives on user.user_id = gives.user_id
+join
+  contest on gives.contest_id = contest.contest_id
+where
+  user.user_id = {user_id}
+order by
+  contest.start_time
+'''

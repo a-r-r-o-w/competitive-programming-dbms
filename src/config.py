@@ -6,7 +6,8 @@ SQL_USER = 'competitive-programming-dbms-admin'
 SQL_PASSWORD = '5up3r-s3cur3-p4ssw0rd'
 SQL_HOST = 'localhost'
 SQL_PORT = '3306'
-SQL_DBNAME = 'cpdbms'
+# SQL_DBNAME = 'cpdbms'
+SQL_DBNAME = 'cpdbms_fpmcugxbry'
 
 SQL_TABLENAMES = [
   'user', 'contest', 'blog', 'tag', 'comment', 'about', 'problem',
@@ -571,7 +572,7 @@ SQL_TABLE_SIZE = {
   'categorized': 450,
   'message': 3000,
   'submission': 5000,
-  'gives': 5000
+  'gives': 10000
 }
 
 SQL_TABLE_DEMO_SIZE = {k: v // 10 for k, v in SQL_TABLE_SIZE.items()}

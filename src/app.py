@@ -4,6 +4,7 @@ import mysql.connector
 import config
 import initialize
 import create
+import read
 import query
 
 def main () -> None:
@@ -17,6 +18,11 @@ def main () -> None:
 
   cursor = connection.cursor()
 
+  st.set_page_config(
+    page_title = 'CP DBMS',
+    layout = 'wide',
+    initial_sidebar_state = 'expanded'
+  )
   st.header('Competitive Programming Platform')
   st.sidebar.header('Options')
   operation = st.sidebar.selectbox(
@@ -32,7 +38,7 @@ def main () -> None:
       create.create(cursor)
     
     case 'Read':
-      pass
+      read.read(cursor)
     
     case 'Update':
       pass
