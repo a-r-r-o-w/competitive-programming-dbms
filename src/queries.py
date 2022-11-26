@@ -1,3 +1,5 @@
+import typing
+
 # database related
 
 def create_database (dbname) -> str:
@@ -42,8 +44,8 @@ def create_table_blog () -> str:
   return '''\
 create table if not exists blog (
   blog_id int primary key,
-  title varchar(50) not null default ' ',
-  content varchar(1000),
+  title varchar(100) not null default ' ',
+  content varchar(2000),
   upvote_count int not null default 0,
   downvote_count int not null default 0,
   user_id int,
@@ -58,7 +60,7 @@ def create_table_tag () -> str:
   return '''\
 create table if not exists tag (
   tag_id int primary key,
-  name varchar(20)
+  name varchar(50)
 ) engine=InnoDB default charset=utf8
 '''
 
@@ -67,7 +69,7 @@ def create_table_comment () -> str:
 create table if not exists comment (
   user_id int,
   blog_id int,
-  content varchar(300),
+  content varchar(1000),
   time timestamp,
   primary key (user_id, blog_id, time),
   foreign key (user_id) references user(user_id)
@@ -99,6 +101,7 @@ def create_table_problem () -> str:
 create table if not exists problem (
   problem_id int,
   contest_id int,
+  description varchar(2000) not null,
   type varchar(50) not null,
   time_constraint int not null default 1,
   memory_constraint int not null default 256,
@@ -113,11 +116,10 @@ create table if not exists problem (
 def create_table_categorized () -> str:
   return '''\
 create table if not exists categorized (
-  contest_id int,
   problem_id int,
   tag_id int,
-  primary key (problem_id, contest_id, tag_id),
-  foreign key (contest_id, problem_id) references problem(contest_id, problem_id)
+  primary key (problem_id, tag_id),
+  foreign key (problem_id) references problem(problem_id)
     on delete set default
     on update cascade,
   foreign key (tag_id) references tag(tag_id)
@@ -131,7 +133,7 @@ def create_table_message () -> str:
 create table if not exists message (
   sender_id int,
   receiver_id int,
-  body varchar(500) not null,
+  body varchar(1000) not null,
   time timestamp,
   primary key (sender_id, receiver_id, time),
   foreign key (sender_id) references user(user_id)
@@ -148,12 +150,12 @@ def create_table_submission () -> str:
 create table if not exists submission (
   submission_id int primary key,
   user_id int,
-  status varchar(30),
+  status varchar(50),
   execution_time int not null default 0,
   execution_memory int not null default 0,
   contest_id int,
   problem_id int,
-  time timestamp,
+  time int,
   foreign key (user_id) references user(user_id)
     on delete set default
     on update cascade,
@@ -180,14 +182,14 @@ create table if not exists gives (
 ) engine=InnoDB default charset=utf8
 '''
 
-def insert (table_name: str, data: dict) -> str:
+def insert_one (table_name: str, data: dict) -> str:
   keys = []
   values = []
   
   for k, v in data.items():
     keys.append(k)
 
-    if type(v) == int:
+    if type(v) == int or type(v) == float:
       values.append(f'{v}')
     elif type(v) == str:
       values.append(f"'{v}'")
@@ -202,4 +204,34 @@ insert into {table_name}
   ({keys})
 values
   ({values})
+'''
+
+def insert_many (table_name: str, data: typing.List[dict]):
+  keys = [key for key in data[0].keys()]
+  values = []
+
+  for item in data:
+    value = []
+
+    for key in keys:
+      v = item[key]
+
+      if type(v) == int or type(v) == float:
+        value.append(f'{v}')
+      elif type(v) == str:
+        value.append(f"'{v}'")
+      else:
+        raise TypeError('Invalid type used in insert statement')
+    
+    value = ', '.join(value)
+    values.append(value)
+  
+  keys = ', '.join(keys)
+  values = ',\n'.join(f'({value})' for value in values)
+  
+  return f'''\
+insert into {table_name}
+  ({keys})
+values
+  {values}
 '''

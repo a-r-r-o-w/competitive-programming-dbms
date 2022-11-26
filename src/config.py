@@ -571,7 +571,7 @@ SQL_TABLE_SIZE = {
   'categorized': 450,
   'message': 3000,
   'submission': 5000,
-  'gives': 20000
+  'gives': 5000
 }
 
 SQL_TABLE_DEMO_SIZE = {k: v // 10 for k, v in SQL_TABLE_SIZE.items()}
