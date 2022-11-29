@@ -1,11 +1,17 @@
 import streamlit as st
 import mysql.connector.cursor
 import pandas as pd
+import matplotlib.pyplot as plt
 
 import config
 import queries
 
 def read (cursor: mysql.connector.cursor.MySQLCursor):
+  config.SQL_FUNCTIONS_SETUP = True
+  cursor.execute(queries.use_database(config.SQL_DBNAME))
+  cursor.execute(queries.drop_count_problems_in_tags_function())
+  cursor.execute(queries.count_problems_in_tags_function())
+
   '''
   Least/Most Recent Blogs
   '''
@@ -15,7 +21,7 @@ def read (cursor: mysql.connector.cursor.MySQLCursor):
   col1, col2 = st.columns(2)
 
   with col1:
-    blog_count = st.slider('Blog Count', 0, config.SQL_TABLE_DEMO_SIZE.get('blog') - 1)
+    blog_count = st.slider('Blog Count', 1, config.SQL_TABLE_DEMO_SIZE.get('blog'))
   with col2:
     blog_order = st.selectbox('Blog Order', ['Least Recent', 'Most Recent'], index = 1)
 
@@ -75,16 +81,11 @@ def read (cursor: mysql.connector.cursor.MySQLCursor):
     st.dataframe(df)
   
   with st.expander('See Result'):
-    for index, result in df.iterrows():
-      institute = result.get('institute')
-      count = result.get('count(*)')
-
-      if institute:
-        res = f'**{institute}** has {count} users'
-      else:
-        res = f'{count} users do not have an Organisation set'
-      
-      st.markdown(res)
+    # df[df['institute'] == ''] = ('None', 0)
+    fig1, ax1 = plt.subplots()
+    ax1.pie(df['count(*)'], labels = df['institute'])
+    ax1.axis('equal')
+    st.pyplot(fig1)
   
   st.markdown('---')
   
@@ -115,8 +116,8 @@ def read (cursor: mysql.connector.cursor.MySQLCursor):
     st.dataframe(df)
   
   with st.expander('See Result'):
-    rating = []
-    date = []
+    rating = [1500]
+    date = [0]
 
     for index, result in df.iterrows():
       if len(rating) > 0:
@@ -125,7 +126,179 @@ def read (cursor: mysql.connector.cursor.MySQLCursor):
         rating.append(result.get('rating_change'))
       date.append(result.get('contest_start_time'))
     
+    date[0] = date[1]
     plot_df = pd.DataFrame(zip(rating, date), columns = ['Rating', 'Date'])
     st.line_chart(plot_df, x = 'Date', y = 'Rating')
+  
+  st.markdown('---')
+
+  '''
+  Contributions
+  '''
+  st.subheader('Contributions')
+  st.write('Contribution of users')
+
+  col1, col2 = st.columns(2)
+
+  with col1:
+    user_count = st.slider('User Count', 1, config.SQL_TABLE_DEMO_SIZE.get('user'), key = 'user_count_contribution')
+  with col2:
+    user_order = st.selectbox('User Order', ['Ascending', 'Descending'], 1, key = 'user_order_contribution')
+
+  cursor.execute(queries.use_database(config.SQL_DBNAME))
+  cursor.execute(queries.user_contribution(user_count, user_order))
+
+  df = pd.DataFrame(columns = cursor.column_names)
+  data = {}
+  
+  try:
+    data = cursor.fetchall()
+    df = pd.DataFrame(data = data, columns = cursor.column_names)
+  except Exception as e:
+    st.error(e)
+
+  with st.expander('See Query'):
+    st.code(queries.user_contribution(user_count, user_order))
+  
+  with st.expander('See Dataframe'):
+    st.dataframe(df)
+  
+  with st.expander('See Result'):
+    st.dataframe(df)
+  
+  st.markdown('---')
+  
+  '''
+  Rating
+  '''
+  st.subheader('Rating')
+  st.write('Rating of users')
+
+  col1, col2 = st.columns(2)
+
+  with col1:
+    user_count = st.slider('User Count', 1, config.SQL_TABLE_DEMO_SIZE.get('user'), key = 'user_count_rating')
+  with col2:
+    user_order = st.selectbox('User Order', ['Ascending', 'Descending'], 1, key = 'user_order_rating')
+
+  cursor.execute(queries.use_database(config.SQL_DBNAME))
+  cursor.execute(queries.user_rating(user_count, user_order))
+
+  df = pd.DataFrame(columns = cursor.column_names)
+  data = {}
+  
+  try:
+    data = cursor.fetchall()
+    df = pd.DataFrame(data = data, columns = cursor.column_names)
+  except Exception as e:
+    st.error(e)
+
+  with st.expander('See Query'):
+    st.code(queries.user_rating(user_count, user_order))
+  
+  with st.expander('See Dataframe'):
+    st.dataframe(df)
+  
+  with st.expander('See Result'):
+    st.dataframe(df)
+  
+  st.markdown('---')
+
+  '''
+  Problems
+  '''
+  st.subheader('Problems')
+  st.write('List of problems')
+
+  col1, col2 = st.columns(2)
+
+  with col1:
+    problem_count = st.slider('Problem Count', 1, config.SQL_TABLE_DEMO_SIZE.get('problem'), key = 'problem_count_contribution')
+  with col2:
+    problem_order = st.selectbox('Problem Order', ['Ascending', 'Descending'], 1, key = 'problem_order_contribution')
+
+  cursor.execute(queries.use_database(config.SQL_DBNAME))
+  cursor.execute(queries.problem_list(problem_count, problem_order))
+
+  df = pd.DataFrame(columns = cursor.column_names)
+  data = {}
+  
+  try:
+    data = cursor.fetchall()
+    df = pd.DataFrame(data = data, columns = cursor.column_names)
+  except Exception as e:
+    st.error(e)
+
+  with st.expander('See Query'):
+    st.code(queries.problem_list(problem_count, problem_order))
+  
+  with st.expander('See Dataframe'):
+    st.dataframe(df)
+  
+  with st.expander('See Result'):
+    st.dataframe(df)
+  
+  st.markdown('---')
+
+  '''
+  Contest Problems
+  '''
+  st.subheader('Contest Problems')
+  st.write('Problems in a Contest')
+
+  contest_id = st.selectbox('Contest ID', list(range(config.SQL_TABLE_DEMO_SIZE.get('contest'))))
+
+  cursor.execute(queries.use_database(config.SQL_DBNAME))
+  cursor.execute(queries.contest_problems(contest_id))
+
+  df = pd.DataFrame(columns = cursor.column_names)
+  data = {}
+  
+  try:
+    data = cursor.fetchall()
+    df = pd.DataFrame(data = data, columns = cursor.column_names)
+  except Exception as e:
+    st.error(e)
+
+  with st.expander('See Query'):
+    st.code(queries.contest_problems(contest_id))
+  
+  with st.expander('See Dataframe'):
+    st.dataframe(df)
+  
+  with st.expander('See Result'):
+    st.dataframe(df)
+  
+  st.markdown('---')
+
+  '''
+  Number of Problems in Different Categories
+  '''
+  st.subheader('Problems in Different Categories')
+  st.write('Number of Problems in Different Categories')
+
+  cursor.execute(queries.use_database(config.SQL_DBNAME))
+  cursor.execute(queries.problem_in_categories())
+
+  df = pd.DataFrame(columns = cursor.column_names)
+  data = {}
+  
+  try:
+    data = cursor.fetchall()
+    df = pd.DataFrame(data = data, columns = cursor.column_names)
+  except Exception as e:
+    st.error(e)
+
+  with st.expander('See Query'):
+    st.code(queries.problem_in_categories())
+  
+  with st.expander('See Dataframe'):
+    st.dataframe(df)
+  
+  with st.expander('See Result'):
+    fig1, ax1 = plt.subplots()
+    ax1.pie(df['problem_count'], labels = df['tag'])
+    ax1.axis('equal')
+    st.pyplot(fig1)
   
   st.markdown('---')

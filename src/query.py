@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 import mysql.connector.cursor
 
 import config
@@ -22,11 +23,13 @@ Executing query:\n
     cursor.execute(queries.use_database(config.SQL_DBNAME))
     cursor.execute(custom_query)
     data = {}
+    df = pd.DataFrame(columns = cursor.column_names)
 
     try:
       data = cursor.fetchall()
+      df = pd.DataFrame(data = data, columns = cursor.column_names)
     except Exception as e:
       st.error(e)
 
     st.subheader('Query Results')
-    st.write(data)
+    st.dataframe(df)

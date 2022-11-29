@@ -7,7 +7,7 @@ SQL_PASSWORD = '5up3r-s3cur3-p4ssw0rd'
 SQL_HOST = 'localhost'
 SQL_PORT = '3306'
 # SQL_DBNAME = 'cpdbms'
-SQL_DBNAME = 'cpdbms_fpmcugxbry'
+SQL_DBNAME = 'cpdbms_ajpdhmiyxk'
 
 SQL_TABLENAMES = [
   'user', 'contest', 'blog', 'tag', 'comment', 'about', 'problem',
@@ -73,7 +73,7 @@ SQL_TABLE_ATTRIBUTES = {
         'label': 'Rating',
         'min_value': 0,
         'max_value': 4000,
-        'value': 0,
+        'value': 1500,
         'key': 'user.rating'
       },
       'type': int
@@ -565,7 +565,7 @@ SQL_TABLE_SIZE = {
   'user': 1000,
   'contest': 100,
   'blog': 200,
-  'tag': 50,
+  'tag': 36,
   'comment': 500,
   'about': 200,
   'problem': 500,
@@ -576,3 +576,6 @@ SQL_TABLE_SIZE = {
 }
 
 SQL_TABLE_DEMO_SIZE = {k: v // 10 for k, v in SQL_TABLE_SIZE.items()}
+SQL_TABLE_DEMO_SIZE['tag'] = 36
+
+SQL_FUNCTIONS_SETUP = False

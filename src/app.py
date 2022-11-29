@@ -5,6 +5,7 @@ import config
 import initialize
 import create
 import read
+import delete
 import query
 
 def main () -> None:
@@ -44,7 +45,7 @@ def main () -> None:
       pass
     
     case 'Delete':
-      pass
+      delete.delete(cursor)
     
     case 'Query':
       query.query(cursor)

@@ -51,7 +51,7 @@ create table if not exists blog (
   user_id int,
   time timestamp,
   foreign key (user_id) references user(user_id)
-    on delete set default
+    on delete cascade
     on update cascade
 ) engine=InnoDB default charset=utf8
 '''
@@ -73,10 +73,10 @@ create table if not exists comment (
   time timestamp,
   primary key (user_id, blog_id, time),
   foreign key (user_id) references user(user_id)
-    on delete set default
+    on delete cascade
     on update cascade,
   foreign key (blog_id) references blog(blog_id)
-    on delete set default
+    on delete cascade
     on update cascade
 ) engine=InnoDB default charset=utf8
 '''
@@ -88,10 +88,10 @@ create table if not exists about (
   tag_id int,
   primary key (blog_id, tag_id),
   foreign key (blog_id) references blog(blog_id)
-    on delete set default
+    on delete cascade
     on update cascade,
   foreign key (tag_id) references tag(tag_id)
-    on delete set default
+    on delete cascade
     on update cascade
 ) engine=InnoDB default charset=utf8
 '''
@@ -108,7 +108,7 @@ create table if not exists problem (
   points int not null default 0,
   primary key (problem_id, contest_id),
   foreign key (contest_id) references contest(contest_id)
-    on delete set default
+    on delete cascade
     on update cascade
 ) engine=InnoDB default charset=utf8
 '''
@@ -120,10 +120,10 @@ create table if not exists categorized (
   tag_id int,
   primary key (problem_id, tag_id),
   foreign key (problem_id) references problem(problem_id)
-    on delete set default
+    on delete cascade
     on update cascade,
   foreign key (tag_id) references tag(tag_id)
-    on delete set default
+    on delete cascade
     on update cascade
 ) engine=InnoDB default charset=utf8
 '''
@@ -137,10 +137,10 @@ create table if not exists message (
   time timestamp,
   primary key (sender_id, receiver_id, time),
   foreign key (sender_id) references user(user_id)
-    on delete set default
+    on delete cascade
     on update cascade,
   foreign key (receiver_id) references user(user_id)
-    on delete set default
+    on delete cascade
     on update cascade
 ) engine=InnoDB default charset=utf8
 '''
@@ -157,10 +157,10 @@ create table if not exists submission (
   problem_id int,
   time int,
   foreign key (user_id) references user(user_id)
-    on delete set default
+    on delete cascade
     on update cascade,
   foreign key (contest_id, problem_id) references problem(contest_id, problem_id)
-    on delete set default
+    on delete cascade
     on update cascade
 ) engine=InnoDB default charset=utf8
 '''
@@ -174,10 +174,10 @@ create table if not exists gives (
   rank int not null default -1,
   primary key (user_id, contest_id),
   foreign key (user_id) references user(user_id)
-    on delete set default
+    on delete cascade
     on update cascade,
   foreign key (contest_id) references contest(contest_id)
-    on delete set default
+    on delete cascade
     on update cascade
 ) engine=InnoDB default charset=utf8
 '''
@@ -281,4 +281,103 @@ where
   user.user_id = {user_id}
 order by
   contest.start_time
+'''
+
+def user_contribution (user_count, user_order):
+  if user_order == 'Ascending':
+    order = 'asc'
+  else:
+    order = 'desc'
+  
+  return f'''
+select
+  user_id, username, contribution
+from
+  user
+order by
+  contribution {order}
+limit {user_count}
+'''
+
+def user_rating (user_count, user_order):
+  if user_order == 'Ascending':
+    order = 'asc'
+  else:
+    order = 'desc'
+  
+  return f'''
+select
+  user_id, username, rating
+from
+  user
+order by
+  rating {order}
+limit {user_count}
+'''
+
+def problem_list (problem_count, problem_order):
+  if problem_order == 'Ascending':
+    order = 'asc'
+  else:
+    order = 'desc'
+  
+  return f'''
+select
+  *
+from
+  problem
+order by
+  problem_id {order}
+limit {problem_count}
+'''
+
+def contest_problems (contest_id):
+  return f'''
+select
+  *
+from
+  problem
+where
+  contest_id = {contest_id}
+order by
+  problem_id
+'''
+
+def drop_count_problems_in_tags_function ():
+  return '''
+drop function if exists count_problems_in_tags
+'''
+
+def count_problems_in_tags_function ():
+  return '''
+create function count_problems_in_tags (id int)
+returns int
+deterministic
+begin
+  declare problem_count int;
+  set problem_count = (
+    select
+      count(*)
+    from
+      categorized as C natural join problem as P
+    where
+      C.tag_id = id
+  );
+  return problem_count;
+end;
+'''
+
+def problem_in_categories ():
+  return '''
+select
+  T.name as tag, problem_count
+from
+  tag as T natural join (
+    select
+      C.tag_id, (select count_problems_in_tags(C.tag_id)) as problem_count
+    from
+      categorized as C
+    group by
+      C.tag_id
+  ) as tag_counts
 '''

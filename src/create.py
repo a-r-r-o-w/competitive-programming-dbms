@@ -118,7 +118,7 @@ def generate_random_data () -> dict:
       'password': data.get('password')[index],
       'email': data.get('firstname')[index] + '.' + data.get('lastname')[index] + '@' + random.choice(data['domains']),
       'name': data.get('firstname')[index][0].upper() + data.get('firstname')[index][1:] + ' ' + data.get('lastname')[index][0].upper() + data.get('lastname')[index][1:],
-      'rating': random.randint(0, 4000),
+      'rating': 1500,
       'contribution': random.randint(0, 200),
       'institute': random.choice(data['institute']) if random.uniform(0, 1) > 0.2 else '',
       'country': random.choice(data['country']),
@@ -295,11 +295,14 @@ def generate_random_data () -> dict:
     {
       'user_id': gives[index][0],
       'contest_id': gives[index][1],
-      'rating_change': random.randint(-100, 400),
+      'rating_change': random.randint(-200, 400),
       'rank': random.randint(1, 10000)
     }
     for index in range(config.SQL_TABLE_DEMO_SIZE.get('gives'))
   ]
+
+  for gives in table_data['gives']:
+    table_data['user'][gives.get('user_id')]['rating'] += gives.get('rating_change')
 
   return table_data
 
