@@ -11,6 +11,10 @@ def read (cursor: mysql.connector.cursor.MySQLCursor):
   cursor.execute(queries.use_database(config.SQL_DBNAME))
   cursor.execute(queries.drop_count_problems_in_tags_function())
   cursor.execute(queries.count_problems_in_tags_function())
+  cursor.execute(queries.drop_display_user_profile())
+  cursor.execute(queries.display_user_profile())
+  cursor.execute(queries.drop_users_with_five_contests_and_a_blog())
+  cursor.execute(queries.users_with_five_contests_and_a_blog())
 
   '''
   Least/Most Recent Blogs
@@ -300,5 +304,83 @@ def read (cursor: mysql.connector.cursor.MySQLCursor):
     ax1.pie(df['problem_count'], labels = df['tag'])
     ax1.axis('equal')
     st.pyplot(fig1)
+  
+  st.markdown('---')
+
+  '''
+  Display User Profile
+  '''
+  st.subheader('Display User Profile')
+  st.write('Display User Profile')
+
+  user_id = st.selectbox('User ID', list(range(config.SQL_TABLE_DEMO_SIZE.get('user'))), key = 'user_id_display_profile')
+
+  qry = f'''
+select
+  contest.name as contests
+from
+  contest natural join (
+    select
+      gives.contest_id
+    from
+      gives natural join user
+    where
+      user.user_id = {user_id}
+  ) as t
+'''
+
+  # '''
+  # Number of Problems in Different Categories
+  # '''
+  # st.subheader('Problems in Different Categories')
+  # st.write('Number of Problems in Different Categories')
+
+  # cursor.execute(queries.use_database(config.SQL_DBNAME))
+  # cursor.execute(queries.problem_in_categories())
+
+  # df = pd.DataFrame(columns = cursor.column_names)
+  # data = {}
+  
+  # try:
+  #   data = cursor.fetchall()
+  #   df = pd.DataFrame(data = data, columns = cursor.column_names)
+  # except Exception as e:
+  #   st.error(e)
+
+  # with st.expander('See Query'):
+  #   st.code(queries.problem_in_categories())
+  
+  # with st.expander('See Dataframe'):
+  #   st.dataframe(df)
+  
+  # with st.expander('See Result'):
+  #   fig1, ax1 = plt.subplots()
+  #   ax1.pie(df['problem_count'], labels = df['tag'])
+  #   ax1.axis('equal')
+  #   st.pyplot(fig1)
+  
+  # st.markdown('---')
+
+  cursor.execute(queries.use_database(config.SQL_DBNAME))
+  cursor.execute(qry)
+
+  df = pd.DataFrame(columns = cursor.column_names)
+  data = {}
+  
+  try:
+    data = cursor.fetchall()
+    df = pd.DataFrame(data = data, columns = cursor.column_names)
+  except Exception as e:
+    st.error(e)
+
+  with st.expander('See Query'):
+    st.code(queries.display_user_profile())
+    st.code(queries.user_profile(user_id))
+  
+  with st.expander('See Dataframe'):
+    st.dataframe(df)
+  
+  with st.expander('See Result'):
+    st.dataframe(df)
   
   st.markdown('---')

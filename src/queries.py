@@ -348,6 +348,33 @@ def drop_count_problems_in_tags_function ():
 drop function if exists count_problems_in_tags
 '''
 
+def drop_users_with_five_contests_and_a_blog ():
+  return '''
+drop function if exists users_with_five_contests_and_a_blog
+'''
+
+def users_with_five_contests_and_a_blog ():
+  return '''
+create function users_with_five_contests_and_a_blog ()
+returns int
+deterministic
+begin
+  declare user int;
+  set user = (
+    select
+      gives.user_id
+    from
+      gives join blog on gives.user_id = blog.user_id
+    group by
+      contest_id
+    having
+      count(*) >= 5
+    limit 1
+  );
+  return user;
+end;
+'''
+
 def count_problems_in_tags_function ():
   return '''
 create function count_problems_in_tags (id int)
@@ -380,4 +407,36 @@ from
     group by
       C.tag_id
   ) as tag_counts
+'''
+
+def drop_display_user_profile ():
+  return '''
+drop procedure if exists display_user_profile
+'''
+
+def display_user_profile ():
+  return '''
+create procedure display_user_profile (in id int, out contests varchar(50))
+begin
+  select
+    cast(contest.name as varchar(50))
+  into
+    contests
+  from
+    contest natural join (
+      select
+        gives.contest_id
+      from
+        gives natural join user
+      where
+        user.user_id = id
+    ) as t;
+end;
+'''
+
+def user_profile (user_id):
+  return f'''
+set @id = {user_id};
+call display_user_profile(@id, @result);
+select @result;
 '''
